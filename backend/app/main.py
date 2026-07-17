@@ -16,5 +16,6 @@ app = FastAPI(
 def read_root():
     return {"message": "Welcome to CrossSearch AI API"}
 
-# We will include routers here in Phase 1.2
-# app.include_router(auth.router, prefix=settings.API_V1_STR)
+from app.api import auth
+
+app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
