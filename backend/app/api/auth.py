@@ -6,6 +6,7 @@ from app.db.database import get_db
 from app.models.user import User, RoleEnum
 from app.schemas.user import UserCreate, UserResponse
 from app.core import security
+from app.api.deps import get_current_active_user
 
 router = APIRouter()
 
@@ -54,3 +55,12 @@ def login_access_token(
         "access_token": security.create_access_token(user.id),
         "token_type": "bearer",
     }
+
+@router.get("/me", response_model=UserResponse)
+def read_users_me(
+    current_user: User = Depends(get_current_active_user)
+) -> Any:
+    """
+    Get current user details.
+    """
+    return current_user
