@@ -1,7 +1,7 @@
 import os
 import uuid
 import shutil
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -9,6 +9,7 @@ from app.models.user import User
 from app.models.document import Document
 from app.schemas.document import DocumentResponse
 from app.api.deps import get_current_analyst_or_higher
+from app.services.rag_service import process_document_pipeline
 
 router = APIRouter()
 
@@ -18,6 +19,7 @@ ALLOWED_EXTENSIONS = [".pdf", ".txt"]
 
 @router.post("/", response_model=DocumentResponse)
 async def upload_document(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_analyst_or_higher)
@@ -60,5 +62,8 @@ async def upload_document(
     db.add(new_doc)
     db.commit()
     db.refresh(new_doc)
+    
+    # 5. Trigger the Background Task for Chunking and Embedding
+    background_tasks.add_task(process_document_pipeline, new_doc.id)
     
     return new_doc
