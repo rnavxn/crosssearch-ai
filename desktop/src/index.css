@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Monokai Pro Color Palette */
-  --bg-primary: #2D2A2E; /* Dark Charcoal */
-  --bg-secondary: #221F22; /* Deeper Charcoal */
-  --bg-tertiary: #403E41; /* Light Charcoal */
+  /* Monokai Pro (Darker Variant) */
+  --bg-primary: #171617; /* Deepest Charcoal / Almost Black */
+  --bg-secondary: #222022; /* Very Dark Charcoal */
+  --bg-tertiary: #302E30; /* Dark Charcoal */
   
   --accent-primary: #FFD866; /* Vibrant Yellow */
   --accent-hover: #FC9867; /* Vibrant Orange */
   --accent-glow: rgba(255, 216, 102, 0.4);
   
   --text-primary: #FCFCFA; /* Off White */
-  --text-secondary: #AB9DF2; /* Subtle Purple */
+  --text-secondary: #9B989C; /* Soft Grey (Removed Purple) */
   
   --border-subtle: #727072;
   --success: #A9DC76;
@@ -58,7 +58,7 @@ body {
 
 .sidebar {
   width: var(--sidebar-width);
-  background: rgba(45, 42, 46, 0.8); /* Monokai Pro background */
+  background: rgba(23, 22, 23, 0.85); /* Darker Monokai Pro background */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-right: 1px solid var(--border-subtle);

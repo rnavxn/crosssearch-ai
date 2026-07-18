@@ -5,6 +5,7 @@ from app.db.database import Base, engine
 
 # Import all models here so SQLAlchemy knows about them BEFORE create_all
 from app.models.user import User
+from app.models.document import Document
 
 # Create database tables (For Phase 1, we will just use SQLAlchemy's create_all)
 Base.metadata.create_all(bind=engine)
@@ -28,6 +29,7 @@ app.add_middleware(
 def read_root():
     return {"message": "Welcome to CrossSearch AI API"}
 
-from app.api import auth
+from app.api import auth, upload
 
 app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+app.include_router(upload.router, prefix=f"{settings.API_V1_STR}/documents", tags=["documents"])
