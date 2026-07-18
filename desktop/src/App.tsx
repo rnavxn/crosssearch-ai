@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
+import DashboardLayout from './components/layout/DashboardLayout';
+import SearchPage from './pages/SearchPage';
+import UploadPage from './pages/UploadPage';
 import './index.css';
 
 // Protected Route Wrapper
@@ -11,35 +14,26 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Placeholder Dashboard (Will be built in Phase 2.3)
-const Dashboard = () => {
-  const { user, logout } = useAuth();
-  return (
-    <div className="app-container" style={{ padding: '40px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <h1>Welcome, Operator</h1>
-      <div className="glass-card">
-        <p>Email: {user?.email}</p>
-        <p>Clearance Level: <span style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>{user?.role.toUpperCase()}</span></p>
-        <button className="btn-primary" onClick={logout} style={{ marginTop: '20px' }}>Terminate Session</button>
-      </div>
-    </div>
-  );
-};
-
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<AuthPage />} />
+          
           <Route 
             path="/" 
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <DashboardLayout />
               </ProtectedRoute>
-            } 
-          />
+            }
+          >
+            {/* Dashboard Routes */}
+            <Route index element={<SearchPage />} />
+            <Route path="upload" element={<UploadPage />} />
+            <Route path="admin" element={<div style={{padding: '32px', color: 'white'}}>Admin Panel Placeholder</div>} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
