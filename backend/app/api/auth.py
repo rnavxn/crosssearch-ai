@@ -25,10 +25,14 @@ def register_user(
             detail="The user with this email already exists in the system.",
         )
     
+    # Auto-Admin feature: First user to register becomes admin
+    user_count = db.query(User).count()
+    assigned_role = RoleEnum.admin if user_count == 0 else RoleEnum.guest
+    
     user = User(
         email=user_in.email,
         hashed_password=security.get_password_hash(user_in.password),
-        role=RoleEnum.guest
+        role=assigned_role
     )
     db.add(user)
     db.commit()

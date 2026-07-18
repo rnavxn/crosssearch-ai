@@ -55,7 +55,7 @@ const AuthPage = () => {
         {error && (
           <div style={{ 
             padding: '12px', 
-            backgroundColor: 'rgba(220, 20, 60, 0.1)', 
+            backgroundColor: 'var(--accent-glow)', 
             border: '1px solid var(--accent-primary)',
             borderRadius: 'var(--radius-md)',
             color: 'var(--text-primary)',

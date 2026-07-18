@@ -1,15 +1,27 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.database import Base, engine
 
-# Create database tables (For Phase 1, we will just use SQLAlchemy's create_all. 
-# Later we can use Alembic for migrations)
+# Import all models here so SQLAlchemy knows about them BEFORE create_all
+from app.models.user import User
+
+# Create database tables (For Phase 1, we will just use SQLAlchemy's create_all)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Offline Multimodal RAG Backend for CrossSearch AI",
     version="1.0.0",
+)
+
+# Add CORS Middleware so our Electron/React frontend can communicate
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # In production, restrict this to specific domains
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get("/")

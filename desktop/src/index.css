@@ -1,21 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Cyber Slate & Crimson Color Palette */
-  --bg-primary: #0F172A; /* Slate 900 */
-  --bg-secondary: #1E293B; /* Slate 800 */
-  --bg-tertiary: #334155; /* Slate 700 */
+  /* Monokai Pro Color Palette */
+  --bg-primary: #2D2A2E; /* Dark Charcoal */
+  --bg-secondary: #221F22; /* Deeper Charcoal */
+  --bg-tertiary: #403E41; /* Light Charcoal */
   
-  --accent-primary: #DC143C; /* Crimson */
-  --accent-hover: #B01030; /* Darker Crimson */
-  --accent-glow: rgba(220, 20, 60, 0.4);
+  --accent-primary: #FFD866; /* Vibrant Yellow */
+  --accent-hover: #FC9867; /* Vibrant Orange */
+  --accent-glow: rgba(255, 216, 102, 0.4);
   
-  --text-primary: #F8FAFC; /* Slate 50 */
-  --text-secondary: #94A3B8; /* Slate 400 */
+  --text-primary: #FCFCFA; /* Off White */
+  --text-secondary: #AB9DF2; /* Subtle Purple */
   
-  --border-subtle: #334155;
-  --success: #10B981;
-  --warning: #F59E0B;
+  --border-subtle: #727072;
+  --success: #A9DC76;
+  --warning: #FFD866;
   
   /* Layout & Metrics */
   --sidebar-width: 260px;
@@ -58,7 +58,7 @@ body {
 
 .sidebar {
   width: var(--sidebar-width);
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(45, 42, 46, 0.8); /* Monokai Pro background */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-right: 1px solid var(--border-subtle);
@@ -96,9 +96,9 @@ body {
 }
 
 .nav-item.active {
-  background-color: rgba(220, 20, 60, 0.1);
+  background-color: rgba(255, 216, 102, 0.1);
   color: var(--accent-primary);
-  border-color: rgba(220, 20, 60, 0.3);
+  border-color: rgba(255, 216, 102, 0.3);
 }
 
 /* Premium Typography */
@@ -145,7 +145,7 @@ h1, h2, h3, h4 {
 }
 
 .glass-card:hover {
-  border-color: rgba(220, 20, 60, 0.3); 
+  border-color: rgba(255, 216, 102, 0.3); 
 }
 
 /* Inputs */
