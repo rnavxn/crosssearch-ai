@@ -101,3 +101,33 @@ def process_document_pipeline(document_id: int):
             db.commit()
     finally:
         db.close()
+
+def search_documents(query: str, top_k: int = 3):
+    """
+    Query ChromaDB for the most relevant document chunks based on the user query.
+    Returns a list of dictionaries with chunk text and metadata.
+    """
+    try:
+        results = collection.query(
+            query_texts=[query],
+            n_results=top_k
+        )
+        
+        # Format the results
+        formatted_results = []
+        
+        # Chroma returns lists of lists (one list per query)
+        if results['documents'] and results['documents'][0]:
+            documents = results['documents'][0]
+            metadatas = results['metadatas'][0]
+            
+            for i in range(len(documents)):
+                formatted_results.append({
+                    "text": documents[i],
+                    "metadata": metadatas[i] if metadatas else {}
+                })
+                
+        return formatted_results
+    except Exception as e:
+        print(f"Error querying ChromaDB: {e}")
+        return []

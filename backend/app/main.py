@@ -29,7 +29,8 @@ app.add_middleware(
 def read_root():
     return {"message": "Welcome to CrossSearch AI API"}
 
-from app.api import auth, upload
+from app.api import auth, upload, search
 
 app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 app.include_router(upload.router, prefix=f"{settings.API_V1_STR}/documents", tags=["documents"])
+app.include_router(search.router, prefix=f"{settings.API_V1_STR}/search", tags=["search"])

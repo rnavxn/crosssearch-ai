@@ -1,9 +1,11 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Search, UploadCloud, FolderClosed, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const DesktopLayout: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -47,6 +49,27 @@ const DesktopLayout: React.FC = () => {
         </nav>
 
         <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid var(--border-subtle)' }}>
+          {user && (
+            <div style={{ padding: '0 16px 16px 16px', marginBottom: '8px' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Logged in as</p>
+              <p style={{ color: 'var(--text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user.email}
+              </p>
+              <span style={{ 
+                display: 'inline-block',
+                marginTop: '6px',
+                padding: '2px 8px', 
+                backgroundColor: 'var(--bg-tertiary)', 
+                color: 'var(--accent-primary)',
+                borderRadius: '12px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                textTransform: 'uppercase'
+              }}>
+                {user.role}
+              </span>
+            </div>
+          )}
           <button 
             onClick={handleLogout}
             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', backgroundColor: 'transparent', color: 'var(--error)', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-sm)', fontWeight: 500 }}
