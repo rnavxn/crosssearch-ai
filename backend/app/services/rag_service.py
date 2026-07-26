@@ -13,7 +13,10 @@ from app.db.database import SessionLocal
 CHROMA_PERSIST_DIR = "data/chroma"
 os.makedirs(CHROMA_PERSIST_DIR, exist_ok=True)
 
-chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
+chroma_client = chromadb.PersistentClient(
+    path=CHROMA_PERSIST_DIR,
+    settings=Settings(anonymized_telemetry=False)
+)
 
 # We use the default sentence-transformers model. 
 # It will download 'all-MiniLM-L6-v2' on first run (approx 80MB) and then run completely offline.

@@ -21,7 +21,7 @@ class SearchResponse(BaseModel):
     answer: str
     sources: List[SourceChunk]
 
-@router.post("/", response_model=SearchResponse)
+@router.post("", response_model=SearchResponse)
 def perform_search(
     request: SearchRequest,
     current_user: User = Depends(deps.get_current_active_user)

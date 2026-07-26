@@ -15,13 +15,23 @@ interface Message {
 
 const SearchPage: React.FC = () => {
   const [query, setQuery] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'ai',
-      content: 'Hello! I am ready to search your indexed documents. What would you like to know?',
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const saved = localStorage.getItem('crosssearch_chat_history');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse chat history', e);
+      }
     }
-  ]);
+    return [
+      {
+        id: '1',
+        role: 'ai',
+        content: 'Hello! I am ready to search your indexed documents. What would you like to know?',
+      }
+    ];
+  });
   const [loading, setLoading] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -32,6 +42,7 @@ const SearchPage: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
+    localStorage.setItem('crosssearch_chat_history', JSON.stringify(messages));
   }, [messages]);
 
   const handleSend = async () => {
@@ -78,11 +89,28 @@ const SearchPage: React.FC = () => {
     }
   };
 
+  const handleClearChat = () => {
+    if (confirm('Are you sure you want to clear your chat history?')) {
+      const initialMessage = {
+        id: '1',
+        role: 'ai',
+        content: 'Hello! I am ready to search your indexed documents. What would you like to know?',
+      } as Message;
+      setMessages([initialMessage]);
+      localStorage.removeItem('crosssearch_chat_history');
+    }
+  };
+
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column', animation: 'fadeIn 0.3s ease-in-out' }}>
-      <header style={{ marginBottom: '32px', flexShrink: 0 }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Intelligence Search</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Query the offline multimodal knowledge base.</p>
+      <header style={{ marginBottom: '32px', flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Intelligence Search</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>Query the offline multimodal knowledge base.</p>
+        </div>
+        <button onClick={handleClearChat} className="btn-secondary" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>
+          Clear Chat
+        </button>
       </header>
 
       {/* Chat Area */}

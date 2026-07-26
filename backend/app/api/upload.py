@@ -1,7 +1,9 @@
 import os
 import uuid
 import shutil
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -17,7 +19,7 @@ UPLOAD_DIR = "data/uploads"
 ALLOWED_CONTENT_TYPES = ["application/pdf", "text/plain"]
 ALLOWED_EXTENSIONS = [".pdf", ".txt"]
 
-@router.post("/", response_model=DocumentResponse)
+@router.post("/upload", response_model=DocumentResponse)
 async def upload_document(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
@@ -67,3 +69,64 @@ async def upload_document(
     background_tasks.add_task(process_document_pipeline, new_doc.id)
     
     return new_doc
+
+@router.get("/", response_model=List[DocumentResponse])
+def get_documents(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user)
+):
+    """
+    Get all uploaded documents for the user.
+    Admins can see all documents, others only see their own.
+    """
+    if current_user.role == "admin":
+        docs = db.query(Document).all()
+    else:
+        docs = db.query(Document).filter(Document.uploader_id == current_user.id).all()
+    return docs
+
+@router.get("/{document_id}/download")
+def download_document(
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user)
+):
+    """Download the actual file associated with a document ID."""
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+        
+    if current_user.role != "admin" and doc.uploader_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this file")
+        
+    if not os.path.exists(doc.file_path):
+        raise HTTPException(status_code=404, detail="File on disk not found")
+        
+    return FileResponse(
+        path=doc.file_path, 
+        filename=doc.filename,
+        media_type=doc.content_type
+    )
+
+@router.delete("/{document_id}")
+def delete_document(
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_admin)
+):
+    """
+    Delete a document (Admin only).
+    """
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+        
+    # Remove from disk
+    if os.path.exists(doc.file_path):
+        os.remove(doc.file_path)
+        
+    # Remove from DB
+    db.delete(doc)
+    db.commit()
+    
+    return {"message": "Document deleted successfully"}
