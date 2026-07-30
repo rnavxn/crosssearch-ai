@@ -1,10 +1,10 @@
 # CrossSearch AI: Offline Multimodal RAG System 🔍
 
-![CrossSearch AI Banner](https://via.placeholder.com/1200x400/1a1a1a/00ffcc?text=CrossSearch+AI+-+Offline+Multimodal+Knowledge+Base)
+
 
 CrossSearch AI is a highly secure, completely offline, multimodal Retrieval-Augmented Generation (RAG) search engine. It allows users to upload documents (PDFs, TXT) and audio files (MP3, WAV), index them into a local vector database, and query them using state-of-the-art Large Language Models—all without a single byte of data leaving your machine.
 
-## 🌟 Key Features
+## Key Features
 
 * **100% Offline & Private**: Powered by local LLMs (via Ollama) and local embeddings, ensuring maximum data security.
 * **Multimodal Ingestion**: 
@@ -15,7 +15,7 @@ CrossSearch AI is a highly secure, completely offline, multimodal Retrieval-Augm
 * **Role-Based Access Control**: Secure JWT-based authentication system with dynamic UI rendering (e.g., hiding sensitive search tools from Guest users).
 * **Modern UI/UX**: Built with React, Vite, and Lucide icons, featuring a stunning dark-mode "Cyber-Glass" aesthetic with fluid animations.
 
-## 🏗️ Architecture Stack
+## Architecture Stack
 
 ### Frontend (User Interface)
 * **Framework**: React 18 + Vite + TypeScript
@@ -31,7 +31,7 @@ CrossSearch AI is a highly secure, completely offline, multimodal Retrieval-Augm
 * **Audio Transcription**: `faster-whisper` (Base Model)
 * **Language Model**: `llama3` via Ollama API
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 1. **Ollama**: Must be installed and running locally with the `llama3` model pulled (`ollama run llama3`).
@@ -62,7 +62,7 @@ npm run dev
 ```
 *The UI will be available at http://localhost:5173*
 
-## 💡 How It Works (The RAG Pipeline)
+## How It Works (The RAG Pipeline)
 1. **Upload**: User drops a PDF or Audio file into the React frontend.
 2. **Ingestion**: FastAPI receives the file. If it's audio, `faster-whisper` transcribes it to text.
 3. **Classification**: The first 1,500 characters are sent to Ollama to generate a semantic category tag.
