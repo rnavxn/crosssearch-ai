@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { getApiUrl } from '../config';
 
 interface UploadStatus {
   file: File;
@@ -27,7 +28,7 @@ const UploadPage: React.FC = () => {
 
       try {
         const token = localStorage.getItem('access_token');
-        const response = await fetch('http://127.0.0.1:8000/api/v1/documents/upload', {
+        const response = await fetch(`${getApiUrl()}/api/v1/documents/upload`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -60,7 +61,11 @@ const UploadPage: React.FC = () => {
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
-      'text/plain': ['.txt']
+      'text/plain': ['.txt'],
+      'audio/mpeg': ['.mp3'],
+      'audio/wav': ['.wav'],
+      'audio/x-m4a': ['.m4a'],
+      'audio/mp4': ['.m4a']
     }
   });
 
@@ -68,7 +73,7 @@ const UploadPage: React.FC = () => {
     <div style={{ maxWidth: '800px', margin: '0 auto', animation: 'fadeIn 0.3s ease-in-out' }}>
       <header style={{ marginBottom: '32px' }}>
         <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Upload Documents</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Add PDFs and TXT files to the offline vector database.</p>
+        <p style={{ color: 'var(--text-secondary)' }}>Add PDFs, TXT, and Audio files to the offline vector database.</p>
       </header>
 
       {/* Drag & Drop Zone */}
@@ -93,7 +98,7 @@ const UploadPage: React.FC = () => {
             <h3 style={{ fontSize: '1.25rem', marginBottom: '8px', color: isDragActive ? 'var(--accent-primary)' : 'var(--text-primary)' }}>
               {isDragActive ? 'Drop files now...' : 'Click or drag files here'}
             </h3>
-            <p style={{ color: 'var(--text-secondary)' }}>Supports .pdf and .txt files</p>
+            <p style={{ color: 'var(--text-secondary)' }}>Supports .pdf, .txt, .mp3, .wav, .m4a files</p>
           </div>
         </div>
       </div>

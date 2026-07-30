@@ -10,10 +10,12 @@ class DocumentCreate(DocumentBase):
     file_path: str
     uploader_id: int
 
-class DocumentResponse(DocumentBase):
+class DocumentResponse(BaseModel):
     id: int
+    filename: str
     status: str
-    uploader_id: int
+    category: str
+    content_type: str
     created_at: datetime
 
     class Config:

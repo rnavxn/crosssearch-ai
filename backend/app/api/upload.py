@@ -2,22 +2,45 @@ import os
 import uuid
 import shutil
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, Query
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-
 from app.db.database import get_db
 from app.models.user import User
 from app.models.document import Document
 from app.schemas.document import DocumentResponse
-from app.api.deps import get_current_analyst_or_higher
+from app.api import deps
+from app.api.deps import get_current_analyst_or_higher, reusable_oauth2
+from app.core.config import settings
+from jose import jwt, JWTError
+from pydantic import ValidationError
 from app.services.rag_service import process_document_pipeline
 
 router = APIRouter()
 
+async def get_optional_user(
+    db: Session = Depends(get_db),
+    token: str = Query(None),
+    header_token: str = Depends(reusable_oauth2)
+) -> User:
+    # Use query token if provided, else header token
+    active_token = token or header_token
+    if not active_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = jwt.decode(active_token, settings.SECRET_KEY, algorithms=["HS256"])
+        user_id = payload.get("sub")
+        if user_id:
+            user = db.query(User).filter(User.id == int(user_id)).first()
+            if user and user.is_active:
+                return user
+    except (JWTError, ValidationError):
+        pass
+    raise HTTPException(status_code=401, detail="Could not validate credentials")
+
 UPLOAD_DIR = "data/uploads"
-ALLOWED_CONTENT_TYPES = ["application/pdf", "text/plain"]
-ALLOWED_EXTENSIONS = [".pdf", ".txt"]
+ALLOWED_CONTENT_TYPES = ["application/pdf", "text/plain", "audio/mpeg", "audio/wav", "audio/x-m4a", "audio/mp4"]
+ALLOWED_EXTENSIONS = [".pdf", ".txt", ".mp3", ".wav", ".m4a"]
 
 @router.post("/upload", response_model=DocumentResponse)
 async def upload_document(
@@ -33,7 +56,7 @@ async def upload_document(
     # 1. Validate extension and content type
     ext = os.path.splitext(file.filename)[1].lower()
     if ext not in ALLOWED_EXTENSIONS or file.content_type not in ALLOWED_CONTENT_TYPES:
-        raise HTTPException(status_code=400, detail="Only PDF and TXT files are allowed.")
+        raise HTTPException(status_code=400, detail="Only PDF, TXT, and Audio files are allowed.")
 
     # 2. Generate unique local path
     unique_id = str(uuid.uuid4())
@@ -89,7 +112,7 @@ def get_documents(
 def download_document(
     document_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user)
+    current_user: User = Depends(get_optional_user)
 ):
     """Download the actual file associated with a document ID."""
     doc = db.query(Document).filter(Document.id == document_id).first()

@@ -5,6 +5,7 @@ import chromadb
 from chromadb.config import Settings
 from chromadb.utils import embedding_functions
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from faster_whisper import WhisperModel
 
 from app.models.document import Document
 from app.db.database import SessionLocal
@@ -35,10 +36,21 @@ text_splitter = RecursiveCharacterTextSplitter(
     is_separator_regex=False,
 )
 
+# Initialize Whisper Audio Transcription Model
+# 'base' model is ~140MB and extremely fast on CPU
+print("Loading Whisper Model...")
+try:
+    whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
+except Exception as e:
+    print(f"Warning: WhisperModel could not be loaded: {e}")
+    whisper_model = None
+
 def extract_text_from_file(file_path: str, content_type: str) -> str:
-    """Extract raw text from PDF or TXT files."""
+    """Extract raw text from PDF, TXT, or transcribe Audio files."""
     text = ""
-    if content_type == "application/pdf" or file_path.endswith(".pdf"):
+    ext = os.path.splitext(file_path)[1].lower()
+    
+    if content_type == "application/pdf" or ext == ".pdf":
         try:
             doc = fitz.open(file_path)
             for page in doc:
@@ -46,6 +58,16 @@ def extract_text_from_file(file_path: str, content_type: str) -> str:
             doc.close()
         except Exception as e:
             print(f"Error parsing PDF {file_path}: {e}")
+    elif ext in [".mp3", ".wav", ".m4a"]:
+        if not whisper_model:
+            print("Whisper model not initialized. Skipping audio.")
+            return ""
+        try:
+            segments, info = whisper_model.transcribe(file_path, beam_size=5)
+            for segment in segments:
+                text += segment.text + " "
+        except Exception as e:
+            print(f"Error transcribing audio {file_path}: {e}")
     else:
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -75,6 +97,12 @@ def process_document_pipeline(document_id: int):
             doc.status = "error: no text found"
             db.commit()
             return
+            
+        # 2.5 Classify Document using AI
+        from app.services.llm_service import classify_document
+        category = classify_document(raw_text)
+        doc.category = category
+        db.commit()
 
         # 3. Chunk Text
         chunks = text_splitter.split_text(raw_text)

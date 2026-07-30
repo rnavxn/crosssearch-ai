@@ -10,5 +10,6 @@ class Document(Base):
     file_path = Column(String, nullable=False, unique=True)
     uploader_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     status = Column(String, default="uploaded", nullable=False) # e.g. uploaded, vectorizing, ready, error
+    category = Column(String, default="Uncategorized", nullable=False)
     content_type = Column(String, nullable=False) # e.g. application/pdf, text/plain
     created_at = Column(DateTime(timezone=True), server_default=func.now())

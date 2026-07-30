@@ -39,3 +39,26 @@ Answer:"""
         return f"Error: Could not connect to local Ollama instance at {OLLAMA_URL}. Is Ollama running?"
     except Exception as e:
         return f"Error generating answer: {str(e)}"
+
+def classify_document(text: str) -> str:
+    """Uses Ollama to assign a 1-3 word category to a document."""
+    prompt = f"""Read the following document text and reply with a SINGLE category consisting of 1 to 3 words max (e.g., "Scientific Paper", "Music", "Financial Report", "Invoice", "Meeting Notes"). DO NOT say anything else.
+    
+Document text: {text[:1500]}
+
+Category:"""
+    
+    try:
+        response = requests.post(OLLAMA_URL, json={
+            "model": MODEL_NAME,
+            "prompt": prompt,
+            "stream": False
+        }, timeout=30)
+        
+        if response.status_code == 200:
+            category = response.json().get("response", "Uncategorized").strip()
+            # Clean up punctuation from LLM response
+            return category.replace(".", "").replace('"', '').title()[:50]
+        return "Uncategorized"
+    except:
+        return "Uncategorized"

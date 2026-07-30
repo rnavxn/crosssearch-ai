@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Download, Trash2, FileText, Loader2, RefreshCw } from 'lucide-react';
+import { getApiUrl } from '../config';
 import { useAuth } from '../context/AuthContext';
 
 interface Document {
@@ -18,7 +19,7 @@ const CollectionsPage: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch('http://127.0.0.1:8000/api/v1/documents/', {
+      const response = await fetch(`${getApiUrl()}/api/v1/documents/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -41,7 +42,7 @@ const CollectionsPage: React.FC = () => {
   const handleDownload = async (doc: Document) => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/documents/${doc.id}/download`, {
+      const response = await fetch(`${getApiUrl()}/api/v1/documents/${doc.id}/download`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -69,7 +70,7 @@ const CollectionsPage: React.FC = () => {
     
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/documents/${docId}`, {
+      const response = await fetch(`${getApiUrl()}/api/v1/documents/${docId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -111,6 +112,7 @@ const CollectionsPage: React.FC = () => {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-secondary)' }}>
                 <th style={{ padding: '16px 24px', fontWeight: 500, color: 'var(--text-secondary)' }}>Document</th>
+                <th style={{ padding: '16px 24px', fontWeight: 500, color: 'var(--text-secondary)' }}>Category</th>
                 <th style={{ padding: '16px 24px', fontWeight: 500, color: 'var(--text-secondary)' }}>Status</th>
                 <th style={{ padding: '16px 24px', fontWeight: 500, color: 'var(--text-secondary)', textAlign: 'right' }}>Actions</th>
               </tr>
@@ -121,6 +123,9 @@ const CollectionsPage: React.FC = () => {
                   <td style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <FileText size={20} color="var(--accent-primary)" />
                     <span style={{ fontWeight: 500 }}>{doc.filename}</span>
+                  </td>
+                  <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                    {doc.category || 'Uncategorized'}
                   </td>
                   <td style={{ padding: '16px 24px' }}>
                     <span style={{ 
