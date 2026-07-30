@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { getApiUrl } from '../config';
 
 // Since we are running the FastAPI backend locally for Phase 1
-const API_URL = 'http://127.0.0.1:8000/api/v1';
+const API_URL = `${getApiUrl()}/api/v1`;
 
 const api = axios.create({
   baseURL: API_URL,

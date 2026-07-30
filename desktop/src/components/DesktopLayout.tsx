@@ -26,21 +26,24 @@ const DesktopLayout: React.FC = () => {
             <LayoutDashboard size={18} />
             Dashboard
           </NavLink>
-          
-          <NavLink to="/search" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-            <Search size={18} />
-            Search
-          </NavLink>
-          
           <NavLink to="/upload" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <UploadCloud size={18} />
             Upload
           </NavLink>
+          
+          {user?.role !== 'GUEST' && (
+            <>
+              <NavLink to="/search" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                <Search size={18} />
+                Search
+              </NavLink>
 
-          <NavLink to="/collections" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-            <FolderClosed size={18} />
-            Collections
-          </NavLink>
+              <NavLink to="/collections" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                <FolderClosed size={18} />
+                Collections
+              </NavLink>
+            </>
+          )}
           
           <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <Settings size={18} />

@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import SearchPage from './pages/SearchPage';
 import UploadPage from './pages/UploadPage';
 import CollectionsPage from './pages/CollectionsPage';
+import SettingsPage from './pages/SettingsPage';
 import './index.css';
 
 function App() {
@@ -23,9 +24,7 @@ function App() {
               <Route path="search" element={<SearchPage />} />
               <Route path="upload" element={<UploadPage />} />
               <Route path="collections" element={<CollectionsPage />} />
-              
-              {/* Placeholders for MVP scope */}
-              <Route path="settings" element={<div style={{padding: '32px'}}><h2>Settings Placeholder</h2></div>} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
           </Route>
         </Routes>
